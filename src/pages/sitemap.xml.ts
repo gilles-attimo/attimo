@@ -11,6 +11,9 @@ const STATIC_URLS: { loc: string; changefreq: string; priority: string }[] = [
   { loc: "/blog", changefreq: "weekly", priority: "0.8" },
   { loc: "/quiz", changefreq: "weekly", priority: "0.6" },
   { loc: "/contact", changefreq: "weekly", priority: "0.5" },
+  { loc: "/shipping", changefreq: "monthly", priority: "0.4" },
+  { loc: "/privacy", changefreq: "yearly", priority: "0.3" },
+  { loc: "/terms", changefreq: "yearly", priority: "0.3" },
 ];
 
 export const GET: APIRoute = async () => {

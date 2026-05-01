@@ -1,0 +1,31 @@
+---
+import BaseLayout from "@astro/layouts/BaseLayout.astro";
+import HomePage from "@astro/react-pages/HomePage";
+import { aggregateRating, reviews } from "@/lib/reviewSchema";
+import { sanityClient } from "@/lib/sanity";
+
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Attimo Olive Oil",
+  url: "https://attimo-oil.com",
+  aggregateRating,
+  review: reviews,
+};
+
+const homepagePosts = await sanityClient.fetch(
+  `*[_type == "post"] | order(publishedAt desc)[0..2] {
+    _id, title, slug, publishedAt, excerpt, coverImage
+  }`
+);
+---
+
+<BaseLayout
+  title="ATTIMO Specialty Extra Virgin Olive Oil"
+  description="Single-variety extra virgin olive oil from small family groves. High-polyphenol, early harvest, cold-pressed. Lab-tested for quality."
+  canonical="https://attimo-oil.com/"
+  bodyStyle="background-color: #FFFAEA;"
+  jsonLd={orgJsonLd}
+>
+  <HomePage initialPosts={homepagePosts} client:load />
+</BaseLayout>

@@ -1,7 +1,7 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
+import BaseLayout from "@astro/layouts/BaseLayout.astro";
+import Header from "@astro/components/Header.astro";
+import Footer from "@astro/components/Footer.astro";
 import { getAllPosts, urlFor } from "@/lib/sanity";
 
 const posts = await getAllPosts();

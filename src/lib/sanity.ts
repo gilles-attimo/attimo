@@ -42,13 +42,12 @@ export async function getAllPosts(): Promise<BlogPostPreview[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const post = await sanityClient.fetch<BlogPost | null>(
+  return sanityClient.fetch<BlogPost | null>(
     `*[_type == "post" && slug.current == $slug][0] {
       _id, title, slug, publishedAt, _updatedAt, excerpt, coverImage, body, seoTitle, seoDescription, noIndex
     }`,
     { slug }
   );
-  return post;
 }
 
 export async function getMorePosts(currentSlug: string): Promise<BlogPostPreview[]> {

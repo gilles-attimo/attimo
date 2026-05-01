@@ -1,10 +1,10 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
-import ShareButtons from "@/components/ShareButtons.astro";
-import NewsletterForm from "@/components/NewsletterForm.astro";
-import PortableText from "@/components/PortableText.astro";
+import BaseLayout from "@astro/layouts/BaseLayout.astro";
+import Header from "@astro/components/Header.astro";
+import Footer from "@astro/components/Footer.astro";
+import ShareButtons from "@astro/components/ShareButtons.astro";
+import NewsletterForm from "@astro/components/NewsletterForm.astro";
+import PortableText from "@astro/components/PortableText.astro";
 import { getAllPosts, getPostBySlug, getMorePosts, urlFor } from "@/lib/sanity";
 
 export async function getStaticPaths() {

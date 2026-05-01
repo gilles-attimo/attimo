@@ -1,0 +1,79 @@
+---
+// Inline newsletter form. Submits directly to the existing Supabase REST endpoint
+// for the `newsletter_subscribers` table.
+const SUPABASE_URL = "https://tqwfwrbgfnfbmpdenrut.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxd2Z3cmJnZm5mYm1wZGVucnV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzNzgyODUsImV4cCI6MjA3Njk1NDI4NX0.lNOYFGAcsQbdoXuiKVyqgOyAF-dkx6JmvNZsOVZXP6U";
+---
+
+<form class="nl-form flex gap-3 w-full lg:w-auto" data-supabase-url={SUPABASE_URL} data-supabase-key={SUPABASE_ANON_KEY}>
+  <input
+    type="email"
+    name="email"
+    required
+    placeholder="your@email.com"
+    class="nl-input px-4 py-2.5 rounded-lg text-sm flex-1 md:w-64 outline-none transition-shadow duration-200 focus:ring-2"
+    style="font-family: 'Space Grotesk', sans-serif; background-color: #FFFFFF; color: #1B4229; border: 1px solid #1B422925;"
+  />
+  <button
+    type="submit"
+    class="nl-submit px-5 py-2.5 rounded-lg text-sm tracking-wide uppercase transition-opacity duration-200 hover:opacity-90 disabled:opacity-50 whitespace-nowrap"
+    style="font-family: 'UDC Working Man Sans', sans-serif; background-color: #CDDB2D; color: #1B4229;"
+  >
+    Subscribe
+  </button>
+</form>
+<p class="nl-status text-sm mt-3 hidden" style="font-family: 'Space Grotesk', sans-serif; color: #1B4229;"></p>
+
+<script>
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  document.querySelectorAll<HTMLFormElement>(".nl-form").forEach((form) => {
+    const status = form.parentElement?.querySelector<HTMLParagraphElement>(".nl-status");
+    const button = form.querySelector<HTMLButtonElement>(".nl-submit");
+    const input = form.querySelector<HTMLInputElement>(".nl-input");
+    const supabaseUrl = form.dataset.supabaseUrl!;
+    const supabaseKey = form.dataset.supabaseKey!;
+
+    const showStatus = (msg: string) => {
+      if (!status) return;
+      status.textContent = msg;
+      status.classList.remove("hidden");
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = (input?.value || "").trim();
+      if (!EMAIL_RE.test(email)) {
+        showStatus("Please enter a valid email address.");
+        return;
+      }
+      if (button) {
+        button.disabled = true;
+        button.textContent = "...";
+      }
+      try {
+        const res = await fetch(`${supabaseUrl}/rest/v1/newsletter_subscribers`, {
+          method: "POST",
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify({ email }),
+        });
+        if (!res.ok && res.status !== 201 && res.status !== 204) throw new Error(String(res.status));
+        showStatus("You're on the list!");
+        if (input) input.value = "";
+      } catch {
+        showStatus("Something went wrong. Please try again.");
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.textContent = "Subscribe";
+        }
+      }
+    });
+  });
+</script>

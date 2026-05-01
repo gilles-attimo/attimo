@@ -1,0 +1,13 @@
+---
+import BaseLayout from "@astro/layouts/BaseLayout.astro";
+import QuizPageWrapper from "@astro/react-pages/QuizPageWrapper";
+---
+
+<BaseLayout
+  title="Olive Oil Palate Quiz | ATTIMO"
+  description="Find your perfect ATTIMO olive oil. Take the 60-second palate quiz to match your taste with the right single-variety extra virgin olive oil."
+  canonical="https://attimo-oil.com/quiz"
+  bodyStyle="background-color: #FFFAEA;"
+>
+  <QuizPageWrapper client:load />
+</BaseLayout>

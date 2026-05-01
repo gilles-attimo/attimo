@@ -1,0 +1,137 @@
+---
+import "@astro/styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogTitle?: string;
+  ogImage?: string;
+  ogType?: string;
+  noIndex?: boolean;
+  bodyClass?: string;
+  bodyStyle?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogTitle,
+  ogImage = "https://attimo-oil.com/images/attimo_og.png",
+  ogType = "website",
+  noIndex = false,
+  bodyClass = "",
+  bodyStyle = "background-color: #FAF9F6;",
+  jsonLd,
+} = Astro.props;
+
+const socialTitle = ogTitle ?? title;
+
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, "https://attimo-oil.com").toString();
+
+const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <script id="consentmo-gcmv2-advanced-mode-integration" is:inline>
+      const consentOutOfRegion = { analytics: true, marketing: true, functionality: true, adsDataRedaction: false, urlPassthrough: false };
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', { ad_storage: 'denied', ad_personalization: 'denied', ad_user_data: 'denied', analytics_storage: 'denied', functionality_storage: 'denied', personalization_storage: 'denied', security_storage: 'granted', wait_for_update: 1500 });
+      document.addEventListener('consentmoSignal_onLoad', function(eventData) {
+        const csmLoadSignal = eventData.detail || {isActive:false};
+        if (!csmLoadSignal.isActive) {
+          gtag('consent', 'update', { ad_storage: consentOutOfRegion.marketing ? 'granted' : 'denied', ad_personalization: consentOutOfRegion.marketing ? 'granted' : 'denied', ad_user_data: consentOutOfRegion.marketing ? 'granted' : 'denied', analytics_storage: consentOutOfRegion.analytics ? 'granted' : 'denied', functionality_storage: consentOutOfRegion.functionality ? 'granted' : 'denied', personalization_storage: consentOutOfRegion.functionality ? 'granted' : 'denied', security_storage: 'granted' });
+          gtag('set', 'ads_data_redaction', consentOutOfRegion.adsDataRedaction);
+          gtag('set', 'url_passthrough', consentOutOfRegion.urlPassthrough);
+        } else {
+          document.addEventListener('consentmoSignal', function(event) {
+            const csmSignal = event.detail;
+            const consentState = csmSignal.integration?.gcm?.isEnabled ? csmSignal.integration.gcm.state : csmSignal.state;
+            gtag('consent', 'update', consentState);
+            if (csmSignal.integration?.gcm?.isEnabled) { gtag('set', 'ads_data_redaction', csmSignal.integration.gcm.adsDataRedaction); gtag('set', 'url_passthrough', csmSignal.integration.gcm.urlPassthrough); }
+          });
+        }
+      });
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="ATTIMO" />
+    {noIndex ? <meta name="robots" content="noindex" /> : <meta name="robots" content="index, follow" />}
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonicalUrl} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@attimoevoo" />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caladea:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" />
+    <link rel="icon" type="image/png" href="/favicon.png?v=3" />
+
+    {jsonLdArray.map((data) => <script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />)}
+
+    <script defer src="/klaro-config.js" is:inline></script>
+    <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" />
+    <script defer src="https://cdn.kiprotect.com/klaro/v0.7/klaro.js" data-config="klaroConfig" is:inline></script>
+
+    <style is:inline>
+      .klaro .cookie-notice { background-color: #1B4229 !important; color: #ffffff !important; border-top: 2px solid #CDDB2D !important; border-radius: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; max-width: 100% !important; position: fixed !important; padding: 16px 24px !important; }
+      .klaro .cookie-notice .cn-body { display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important; gap: 24px !important; }
+      .klaro .cookie-notice .cn-body p { color: rgba(255,255,255,0.85) !important; margin: 0 !important; flex: 1 !important; max-width: none !important; margin-right: 40px !important; }
+      .klaro .cookie-notice .cn-ok { align-items: center !important; display: flex !important; gap: 12px !important; }
+      .klaro .cookie-notice:not(.cookie-modal-notice) .cn-body .cn-learn-more { display: inline-flex !important; align-items: center !important; flex-grow: 0 !important; padding: 6px 0 !important; color: #CDDB2D !important; }
+      .klaro .cookie-notice .cm-btn-success { background-color: #CDDB2D !important; color: #1B4229 !important; border: none !important; font-weight: 700 !important; text-transform: none !important; border-radius: 2px !important; padding: 6px 15px !important; margin-top: 3px !important; }
+      .klaro .cookie-notice .cm-btn.cm-btn-danger.cn-decline, .klaro .cookie-notice button.cm-btn-danger, .klaro .cookie-notice button.cn-decline { background-color: transparent !important; color: #CDDB2D !important; border: 1px solid #CDDB2D !important; border-radius: 2px !important; padding: 6px 15px !important; box-shadow: none !important; }
+      .klaro .cookie-modal .cm-modal { background-color: #1B4229 !important; color: #ffffff !important; }
+      .klaro .cookie-modal .cm-modal .cm-header { border-bottom: 1px solid rgba(205,219,45,0.3) !important; }
+      .klaro .cookie-modal .cm-modal .cm-header h1 { color: #ffffff !important; }
+      .klaro .cookie-modal .cm-modal .cm-body p, .klaro .cookie-modal .cm-modal .cm-purposes p, .klaro .cookie-modal .cm-modal p { color: rgba(255,255,255,0.9) !important; }
+      .klaro .cookie-modal .cm-modal .cm-footer { border-top: 1px solid rgba(205,219,45,0.3) !important; background-color: #1B4229 !important; }
+      .klaro .cookie-modal .cm-modal .cm-footer .cm-btn { padding: 8px 20px !important; }
+      .klaro .cookie-modal .cm-modal .cm-btn-success, .klaro .cookie-modal .cm-modal .cm-btn-accept-all { background-color: #CDDB2D !important; color: #1B4229 !important; border: none !important; font-weight: 700 !important; }
+      .klaro .cookie-modal .cm-modal .cm-btn-danger { background-color: transparent !important; color: #CDDB2D !important; border: 1px solid #CDDB2D !important; }
+      .klaro .cookie-modal input:checked + .cm-list-label .slider { background-color: #CDDB2D !important; }
+      .klaro .cookie-modal .cm-list-label .slider { background-color: rgba(255,255,255,0.2) !important; }
+      .klaro .cookie-modal .cm-list-label .slider:before { background-color: #ffffff !important; }
+      .klaro .cookie-modal .cm-modal a { color: #CDDB2D !important; }
+      .klaro .cookie-modal .cm-modal .cm-list-title { color: #ffffff !important; }
+      .klaro .cookie-modal .cm-modal .cm-list-description { color: rgba(255,255,255,0.7) !important; }
+      .klaro .cookie-modal .cm-modal .cm-divider { border-color: rgba(205,219,45,0.2) !important; }
+      .klaro .cm-bg { background-color: rgba(0,0,0,0.7) !important; }
+      .klaro .cookie-modal .cm-modal .cm-header .hide, .klaro .cookie-modal .cm-modal .cm-header button.hide, .klaro .cookie-modal .cm-modal .cm-header .hide svg { color: rgba(255,255,255,0.8) !important; opacity: 0.8 !important; fill: rgba(255,255,255,0.8) !important; stroke: rgba(255,255,255,0.8) !important; }
+    </style>
+
+    <!-- Google Tag Manager -->
+    <script is:inline>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-T5HD4T66');
+    </script>
+    <!-- End Google Tag Manager -->
+  </head>
+  <body class={bodyClass} style={bodyStyle}>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T5HD4T66" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <slot />
+  </body>
+</html>

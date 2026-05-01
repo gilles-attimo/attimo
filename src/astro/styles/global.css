@@ -1,0 +1,351 @@
+/* UDC Working Man Sans Custom Fonts */
+@font-face {
+  font-family: 'UDC Working Man Sans';
+  src: url('/fonts/UDC_Working_Man_Sans.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Hero ticker sizing and speed */
+.hero-ticker-text {
+  font-size: clamp(1rem, 2vw, 2.25rem);
+}
+
+.hero-ticker-icon {
+  width: 1.85em;
+  height: 1.85em;
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.hero-ticker-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+@media (min-width: 1024px) {
+  .hero-ticker-text {
+    font-size: clamp(0.7rem, 1.4vw, 1.575rem);
+  }
+}
+
+/* Oil card origin/volume label sizing */
+.oil-card-label {
+  font-size: 13px;
+}
+@media (min-width: 768px) {
+  .oil-card-label {
+    font-size: 12px;
+  }
+}
+@media (min-width: 1024px) {
+  .oil-card-label {
+    font-size: clamp(0.85rem, 1.1vw, 1.1rem);
+  }
+}
+
+@font-face {
+  font-family: 'UDC Working Man Sans Light';
+  src: url('/fonts/UDC_Working_Man_Sans_Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'UDC Working Man Sans Rough';
+  src: url('/fonts/UDC_Working_Man_Sans_Rough.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Beverly Drive';
+  src: url('/fonts/BeverlyDriveRight-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Beverly Drive';
+  src: url('/fonts/BeverlyDriveRight-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Beverly Drive';
+  src: url('/fonts/BeverlyDriveRight-Extrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Beverly Drive';
+  src: url('/fonts/BeverlyDriveRight-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  @media (max-width: 767px) {
+    .sm-only-subtitle-size {
+      font-size: clamp(1.23rem, 2.85vw, 2.85rem) !important;
+    }
+
+    .collection-heading-mobile-width {
+      max-width: 90% !important;
+    }
+
+    .collection-subtitle-mobile-width {
+      max-width: 90% !important;
+    }
+
+    .collection-subtitle-mobile-size {
+      font-size: clamp(1.19rem, 1.53vw, 1.53rem) !important;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .md-only-subtitle-size {
+      font-size: clamp(1.06rem, 2.45vw, 2.45rem) !important;
+    }
+    .tablet-title-size {
+      font-size: clamp(2.88rem, 5.6vw, 5.6rem) !important;
+    }
+    .tablet-volume-size {
+      font-size: clamp(1.57rem, 2.98vw, 3.18rem) !important;
+    }
+    .tablet-subtitle-size {
+      font-size: clamp(1.57rem, 3.65vw, 3.65rem) !important;
+    }
+  }
+}
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Mediterranean olive oil brand palette */
+    --background: 45 25% 97%;
+    --foreground: 85 15% 15%;
+
+    --card: 45 35% 95%;
+    --card-foreground: 85 15% 15%;
+
+    --popover: 45 35% 95%;
+    --popover-foreground: 85 15% 15%;
+
+    /* Rich olive green primary */
+    --primary: 76 20% 26%;
+    --primary-foreground: 45 25% 97%;
+
+    /* Warm golden secondary */
+    --secondary: 45 65% 85%;
+    --secondary-foreground: 76 20% 26%;
+
+    /* Soft cream muted */
+    --muted: 45 20% 90%;
+    --muted-foreground: 85 10% 45%;
+
+    /* Golden accent */
+    --accent: 46 87% 53%;
+    --accent-foreground: 76 20% 26%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 45 15% 85%;
+    --input: 45 15% 85%;
+    --ring: 85 35% 25%;
+
+    /* KLEIA Brand Tokens - Sophisticated Olive Theme */
+    --olive-dark: 122 42% 18%; /* Exact brand green #1B4229 */
+    --olive-medium: 76 15% 40%; /* Lighter version */
+    --olive-light: 76 10% 55%; /* Very light olive */
+    --olive-bright: 65 71% 52%; /* Bright light green rgb(205, 219, 45) */
+    --gold-accent: 42 65% 50%; /* Subtle gold accent */
+    --golden-text: 49 85% 60%; /* Golden text color #EFC11B */
+    --cream: 45 19% 92%; /* Light warm beige #EEECE6 */
+    --warm-white: 45 15% 98%; /* Warm white */
+    --product-background: 45 19% 92%; /* Light warm beige #EEECE6 */
+    
+    /* Wild Geese inspired sections */
+    --section-dark: 67 30% 18%; /* Dark olive from #4E5B2B */
+    --section-light: 50 100% 96%; /* Light cream #FFFAEA */
+    
+    /* KLEIA Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(45 85% 55%) 0%, hsl(48 90% 65%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(58 45% 15%) 0%, hsl(67 55% 25%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(48 95% 95%) 0%, hsl(45 85% 90%) 100%);
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -8px hsl(85 35% 25% / 0.15);
+    --shadow-medium: 0 8px 30px -12px hsl(85 35% 25% / 0.25);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Typography */
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-sans: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark olive theme using #4E5B2B as base */
+    --background: 75 36% 8%;
+    --foreground: 48 95% 95%;
+
+    --card: 75 36% 10%;
+    --card-foreground: 48 95% 95%;
+
+    --popover: 75 36% 10%;
+    --popover-foreground: 48 95% 95%;
+
+    --primary: 48 95% 95%;
+    --primary-foreground: 75 36% 12%;
+
+    --secondary: 75 36% 18%;
+    --secondary-foreground: 48 95% 95%;
+
+    --muted: 75 36% 18%;
+    --muted-foreground: 75 20% 65%;
+
+    --accent: 75 36% 22%;
+    --accent-foreground: 48 95% 95%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 48 95% 95%;
+
+    --border: 75 36% 18%;
+    --input: 75 36% 18%;
+    --ring: 75 50% 70%;
+    --sidebar-background: 75 36% 12%;
+    --sidebar-foreground: 48 95% 95%;
+    --sidebar-primary: 75 50% 35%;
+    --sidebar-primary-foreground: 75 36% 8%;
+    --sidebar-accent: 75 36% 16%;
+    --sidebar-accent-foreground: 48 95% 95%;
+    --sidebar-border: 75 36% 16%;
+    --sidebar-ring: 75 50% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    @apply text-olive-dark;
+    letter-spacing: -0.01em;
+  }
+  h1 { font-weight: 300; }
+  h2 { font-weight: 300; }
+
+  em, i { font-family: var(--font-serif); font-style: italic; }
+}
+
+/* Section separator utility */
+.section-separator {
+  border-top: 1px dashed black;
+  margin: 0;
+  opacity: 0.6;
+}
+
+/* 3D Card Flip Utilities */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Cart Badge Styles */
+#nav-cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cart-badge {
+  position: absolute;
+  right: -10px;
+  bottom: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: #121212;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+@media (min-width: 1280px) {
+  section:not(.product-hero):not(.hero-full) {
+    zoom: 0.78;
+  }
+}
+
+@media (min-width: 1440px) {
+  section:not(.product-hero):not(.hero-full) {
+    zoom: 0.85;
+  }
+}
