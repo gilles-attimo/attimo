@@ -1,0 +1,98 @@
+/* UDC Working Man Sans Custom Fonts */
+@font-face {
+  font-family: "UDC Working Man Sans";
+  src: url("/fonts/UDC_Working_Man_Sans.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "UDC Working Man Sans Light";
+  src: url("/fonts/UDC_Working_Man_Sans_Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "UDC Working Man Sans Rough";
+  src: url("/fonts/UDC_Working_Man_Sans_Rough.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Beverly Drive";
+  src: url("/fonts/BeverlyDriveRight-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Beverly Drive";
+  src: url("/fonts/BeverlyDriveRight-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Beverly Drive";
+  src: url("/fonts/BeverlyDriveRight-Extrabold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Beverly Drive";
+  src: url("/fonts/BeverlyDriveRight-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --olive-dark: 122 42% 18%;
+  --olive-bright: 65 71% 52%;
+  --cream: 45 19% 92%;
+  --font-sans: "Space Grotesk", "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body {
+  background-color: #faf9f6;
+  color: #1a1a1a;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Space Grotesk", sans-serif;
+  color: #1b4229;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-weight: 300;
+}
+h2 {
+  font-weight: 300;
+}
+
+em,
+i {
+  font-style: italic;
+}
