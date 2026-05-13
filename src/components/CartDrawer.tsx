@@ -135,73 +135,68 @@ export const CartDrawer = ({ darkIcon = false, locale = DEFAULT_LOCALE }: { dark
     }
   };
 
-  // Rendered the same way in the empty state and below the line items so
-  // both views share the same "You might also like" layout and quick-add.
-  const recommendationsSection = recommendations.length > 0 ? (
-    <>
-      <h3
-        className="text-sm uppercase mb-3"
-        style={{
-          fontFamily: 'UDC Working Man Sans, sans-serif',
-          color: '#1B4229',
-          letterSpacing: '0.05em',
-        }}
-      >
-        You might also like
-      </h3>
-      <div className="grid grid-cols-3 gap-2">
-        {recommendations.map((product) => {
-          const slug = urlSlugForShopifyHandle(product.node.handle);
-          if (!slug) return null;
-          const variant = product.node.variants?.edges?.[0]?.node;
-          if (!variant) return null;
-          const image = product.node.images?.edges?.[0]?.node?.url;
-          const name = PRODUCT_DISPLAY_NAMES[slug] ?? slug;
-          const price = locale.prices[slug];
-          return (
-            <div key={product.node.id} className="flex flex-col items-center text-center">
-              {image && (
-                <div
-                  className="w-full aspect-square rounded-lg overflow-hidden mb-1.5"
-                  style={{ backgroundColor: '#1B4229' }}
-                >
-                  <img
-                    src={image}
-                    alt={name}
-                    className="w-full h-full object-cover object-center"
-                  />
-                </div>
-              )}
-              <p
-                className="text-xs font-medium leading-tight"
-                style={{ color: '#1B4229', fontFamily: 'Space Grotesk, sans-serif' }}
+  // Grid of recommendation cards, shared by both the empty state and the
+  // "You might also like" block below the line items. Heading lives at the
+  // call site so each view can use its own copy.
+  const recommendationsGrid = recommendations.length > 0 ? (
+    <div className="grid grid-cols-3 gap-2">
+      {recommendations.map((product) => {
+        const slug = urlSlugForShopifyHandle(product.node.handle);
+        if (!slug) return null;
+        const variant = product.node.variants?.edges?.[0]?.node;
+        if (!variant) return null;
+        const image = product.node.images?.edges?.[0]?.node?.url;
+        const name = PRODUCT_DISPLAY_NAMES[slug] ?? slug;
+        const price = locale.prices[slug];
+        return (
+          <div key={product.node.id} className="flex flex-col items-center text-center">
+            {image && (
+              <div
+                className="w-full aspect-square rounded-lg overflow-hidden mb-1.5"
+                style={{ backgroundColor: '#1B4229' }}
               >
-                {name}
-              </p>
-              <p
-                className="text-xs mb-1.5"
-                style={{ color: '#1B4229', opacity: 0.75, fontFamily: 'Space Grotesk, sans-serif' }}
-              >
-                {formatPrice(price, locale)}
-              </p>
-              <button
-                type="button"
-                onClick={() => handleAddRecommendation(product)}
-                className="px-3 py-1 text-xs font-bold rounded transition-opacity hover:opacity-90"
-                style={{
-                  backgroundColor: 'rgb(205, 219, 45)',
-                  color: '#1B4229',
-                  fontFamily: 'UDC Working Man Sans, sans-serif',
-                }}
-              >
-                + Add
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </>
+                <img
+                  src={image}
+                  alt={name}
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+            )}
+            <p
+              className="text-xs font-medium leading-tight"
+              style={{ color: '#1B4229', fontFamily: 'Space Grotesk, sans-serif' }}
+            >
+              {name}
+            </p>
+            <p
+              className="text-xs mb-1.5"
+              style={{ color: '#1B4229', opacity: 0.75, fontFamily: 'Space Grotesk, sans-serif' }}
+            >
+              {formatPrice(price, locale)}
+            </p>
+            <button
+              type="button"
+              onClick={() => handleAddRecommendation(product)}
+              className="px-3 py-1 text-xs font-bold rounded transition-opacity hover:opacity-90"
+              style={{
+                backgroundColor: 'rgb(205, 219, 45)',
+                color: '#1B4229',
+                fontFamily: 'UDC Working Man Sans, sans-serif',
+              }}
+            >
+              + Add
+            </button>
+          </div>
+        );
+      })}
+    </div>
   ) : null;
+
+  const recommendationsHeadingStyle = {
+    fontFamily: 'UDC Working Man Sans, sans-serif',
+    color: '#1B4229',
+    letterSpacing: '0.05em',
+  } as const;
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -231,30 +226,39 @@ export const CartDrawer = ({ darkIcon = false, locale = DEFAULT_LOCALE }: { dark
       </SheetTrigger>
 
       <SheetContent className="w-full sm:max-w-lg flex flex-col h-full" style={{ backgroundColor: 'rgb(255, 250, 234)' }}>
-        <SheetHeader className="flex-shrink-0">
-          <SheetTitle
-            className="text-3xl font-bold"
-            style={{ fontFamily: 'UDC Working Man Sans, sans-serif', color: '#1B4229' }}
-          >
-            Shopping Cart
+        <SheetHeader className="flex-shrink-0 text-left">
+          <SheetTitle asChild>
+            <h1
+              className="font-bold uppercase tracking-tight m-0"
+              style={{
+                fontFamily: 'UDC Working Man Sans, sans-serif',
+                color: '#1B4229',
+                fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
+                lineHeight: 1.05,
+              }}
+            >
+              Shopping Cart
+            </h1>
           </SheetTitle>
-          <SheetDescription>
-            {totalItems === 0 ? "Your cart is empty" : `${totalItems} item${totalItems !== 1 ? 's' : ''} in your cart`}
+          <SheetDescription className={totalItems === 0 ? "sr-only" : undefined}>
+            {totalItems === 0
+              ? "Your shopping cart is currently empty."
+              : `${totalItems} item${totalItems !== 1 ? 's' : ''} in your cart`}
           </SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col flex-1 pt-6 min-h-0">
           {items.length === 0 ? (
             <div className="flex flex-col flex-1 min-h-0">
-              <p
-                className="text-base mb-6 flex-shrink-0"
-                style={{ color: '#1B4229', fontFamily: 'Space Grotesk, sans-serif' }}
+              <h3
+                className="text-sm uppercase mb-3 flex-shrink-0"
+                style={recommendationsHeadingStyle}
               >
                 Looks like you haven&apos;t added anything yet. Let&apos;s get you started.
-              </p>
-              {recommendationsSection && (
+              </h3>
+              {recommendationsGrid && (
                 <div className="flex-1 overflow-y-auto pr-2 min-h-0">
-                  {recommendationsSection}
+                  {recommendationsGrid}
                 </div>
               )}
             </div>
@@ -325,9 +329,12 @@ export const CartDrawer = ({ darkIcon = false, locale = DEFAULT_LOCALE }: { dark
                   ))}
                 </div>
 
-                {recommendationsSection && (
+                {recommendationsGrid && (
                   <div className="mt-4 pt-4 border-t border-olive-dark/10">
-                    {recommendationsSection}
+                    <h3 className="text-sm uppercase mb-3" style={recommendationsHeadingStyle}>
+                      You might also like
+                    </h3>
+                    {recommendationsGrid}
                   </div>
                 )}
               </div>
