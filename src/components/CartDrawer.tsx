@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/sheet";
 import { ShoppingCart, Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
-import { DEFAULT_LOCALE, formatPrice, type Locale } from "@/lib/i18n/config";
+import { DEFAULT_LOCALE, formatPrice, localizeHref, type Locale } from "@/lib/i18n/config";
 import { urlSlugForShopifyHandle } from "@/lib/productContent";
+import { Link } from "@/lib/router-stub";
 import { fetchProducts, type CartItem, type ShopifyProduct } from "@/lib/shopify";
 import { detectCountry, getFreeShippingThreshold } from "@/lib/shipping";
 
@@ -151,8 +152,10 @@ export const CartDrawer = ({ darkIcon = false, locale = DEFAULT_LOCALE }: { dark
         return (
           <div key={product.node.id} className="flex flex-col items-center text-center">
             {image && (
-              <div
-                className="w-full aspect-square rounded-lg overflow-hidden mb-1.5"
+              <Link
+                to={localizeHref(`/product/${slug}`, locale)}
+                aria-label={`View ${name}`}
+                className="block w-full aspect-square rounded-lg overflow-hidden mb-1.5 transition-opacity hover:opacity-90"
                 style={{ backgroundColor: '#1B4229' }}
               >
                 <img
@@ -160,7 +163,7 @@ export const CartDrawer = ({ darkIcon = false, locale = DEFAULT_LOCALE }: { dark
                   alt={name}
                   className="w-full h-full object-cover object-center"
                 />
-              </div>
+              </Link>
             )}
             <p
               className="text-xs font-medium leading-tight"
