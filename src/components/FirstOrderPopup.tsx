@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCartStore } from "@/stores/cartStore";
 
 const SESSION_KEY_DISMISSED = "attimo_popup_dismissed";
 const DISCOUNT_CODE = "FIRSTPRESS";
@@ -16,8 +17,9 @@ export const FirstOrderPopup = () => {
   useEffect(() => {
     if (sessionStorage.getItem(SESSION_KEY_DISMISSED) === "true") return;
     const timer = setTimeout(() => {
+      if (useCartStore.getState().items.length > 0) return;
       setVisible(true);
-    }, 10000);
+    }, 15000);
     return () => clearTimeout(timer);
   }, []);
 
