@@ -38,17 +38,3 @@ var klaroConfig = {
     },
   ],
 };
-
-var klaroAlignFix = setInterval(function() {
-  var learnMore = document.querySelector('.klaro .cookie-notice .cn-learn-more');
-  var cnOk = document.querySelector('.klaro .cookie-notice .cn-ok');
-  if (learnMore && cnOk) {
-    cnOk.style.setProperty('align-items', 'center', 'important');
-    learnMore.style.setProperty('display', 'inline-flex', 'important');
-    learnMore.style.setProperty('align-items', 'center', 'important');
-    learnMore.style.setProperty('padding-top', '6px', 'important');
-    learnMore.style.setProperty('padding-bottom', '6px', 'important');
-    learnMore.style.setProperty('line-height', '1', 'important');
-    clearInterval(klaroAlignFix);
-  }
-}, 100);
