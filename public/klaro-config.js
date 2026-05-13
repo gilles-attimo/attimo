@@ -12,7 +12,7 @@ var klaroConfig = {
   translations: {
     en: {
       consentNotice: {
-        description: 'We use cookies and similar tracking technologies to analyse site traffic and measure the performance of our marketing campaigns. By clicking "That\'s ok" you consent to the use of these technologies. You can withdraw your consent at any time by clicking "Let me choose".',
+        description: 'We use a few cookies to keep things running smoothly and learn what you enjoy. You can choose what to allow at any time.',
       },
       acceptAll: 'That\'s ok',
       declineAll: 'I decline',
