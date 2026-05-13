@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -22,8 +22,16 @@ export const CartDrawer = ({ darkIcon = false }: { darkIcon?: boolean }) => {
     createCheckout 
   } = useCartStore();
 
+  // Toggle a body class while the drawer is open so the geo-targeted
+  // shipping announcement bar can hide itself on mobile (where the drawer
+  // is full-screen and the bar would overlap the cart title).
+  useEffect(() => {
+    document.body.classList.toggle('cart-open', isOpen);
+    return () => document.body.classList.remove('cart-open');
+  }, [isOpen]);
+
   console.log('[CartDrawer] Rendering, items:', items.length, 'isOpen:', isOpen);
-  
+
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + (parseFloat(item.price.amount) * item.quantity), 0);
 
