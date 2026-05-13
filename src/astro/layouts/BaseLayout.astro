@@ -1,5 +1,6 @@
 ---
 import "@astro/styles/global.css";
+import { getHreflangs, type HreflangEntry } from "@/lib/i18n/config";
 
 interface Props {
   title: string;
@@ -12,6 +13,10 @@ interface Props {
   bodyClass?: string;
   bodyStyle?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  // Path *without* locale prefix, e.g. "/", "/product/coratina", "/shipping".
+  // When set, BaseLayout renders hreflang link tags for every locale.
+  hreflangPath?: string;
+  hideAnnounceBar?: boolean;
 }
 
 const {
@@ -25,6 +30,8 @@ const {
   bodyClass = "",
   bodyStyle = "background-color: #FAF9F6;",
   jsonLd,
+  hreflangPath,
+  hideAnnounceBar = false,
 } = Astro.props;
 
 const socialTitle = ogTitle ?? title;
@@ -32,6 +39,8 @@ const socialTitle = ogTitle ?? title;
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, "https://attimo-oil.com").toString();
 
 const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+
+const hreflangs: HreflangEntry[] = hreflangPath ? getHreflangs(hreflangPath) : [];
 ---
 
 <!doctype html>
@@ -65,6 +74,8 @@ const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <meta name="author" content="ATTIMO" />
     {noIndex ? <meta name="robots" content="noindex" /> : <meta name="robots" content="index, follow" />}
     <link rel="canonical" href={canonicalUrl} />
+
+    {hreflangs.map((h) => <link rel="alternate" hreflang={h.hreflang} href={h.href} />)}
 
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={socialTitle} />
@@ -137,6 +148,66 @@ const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
     <noscript>
       <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T5HD4T66" height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
+
+    {!hideAnnounceBar && (
+      <>
+        <!-- Geo-targeted shipping announcement bar.
+             Hidden by default; an inline script reads the `attimo_shipping_tier`
+             cookie set by middleware.ts and reveals the right message. -->
+        <div id="announce-bar" role="status">
+          <span id="announce-bar-text"></span>
+        </div>
+        <style is:inline>
+          :root { --announce-bar-h: 0px; }
+          header.fixed { transform: translateY(var(--announce-bar-h, 0px)); }
+          #announce-bar {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 60;
+            width: 100%;
+            text-align: center;
+            background-color: #B3E58C;
+            color: hsl(var(--olive-dark));
+            font-family: 'UDC Working Man Sans', sans-serif;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 12px;
+            font-size: 20px;
+          }
+          @media (max-width: 768px) {
+            #announce-bar { font-size: 16px; }
+          }
+          @media (max-width: 480px) {
+            #announce-bar { font-size: 13px; }
+          }
+        </style>
+        <script is:inline>
+          (function () {
+            var m = document.cookie.match(/(?:^|;\s*)attimo_shipping_tier=(\d)/);
+            if (!m) return;
+            var tier = m[1];
+            var msg = tier === "2"
+              ? "FREE SHIPPING ON 2+ BOTTLES"
+              : tier === "3"
+              ? "FREE SHIPPING ON 3+ BOTTLES"
+              : null;
+            if (!msg) return;
+            var bar = document.getElementById("announce-bar");
+            var text = document.getElementById("announce-bar-text");
+            if (!bar || !text) return;
+            text.textContent = msg;
+            bar.style.display = "block";
+            // Push the fixed Header below the bar so it doesn't overlap.
+            var h = bar.getBoundingClientRect().height || 40;
+            document.documentElement.style.setProperty("--announce-bar-h", h + "px");
+          })();
+        </script>
+      </>
+    )}
+
     <slot />
   </body>
 </html>
