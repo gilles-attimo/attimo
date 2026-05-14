@@ -37,8 +37,16 @@ const jsonLd: Record<string, unknown> = {
   headline: post.seoTitle || post.title,
   description: pageDescription,
   datePublished: post.publishedAt,
-  author: { "@type": "Organization", name: "Attimo" },
+  dateModified: post._updatedAt || post.publishedAt,
+  author: { "@type": "Person", name: "Attimo", url: "https://attimo-oil.com" },
+  publisher: {
+    "@type": "Organization",
+    name: "ATTIMO Specialty Olive Oil",
+    url: "https://attimo-oil.com",
+    logo: "https://attimo-oil.com/logo.png",
+  },
   url: canonicalUrl,
+  mainEntityOfPage: canonicalUrl,
 };
 if (post.coverImage) {
   jsonLd.image = ogImage;
