@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { aggregateRating, reviews } from "@/lib/reviewSchema";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useParams } from "@/lib/router-stub";
 import { MapPin } from "lucide-react";
@@ -23,17 +22,30 @@ import { QuantitySelector } from "@/components/QuantitySelector";
 import { PurchaseOptions } from "@/components/PurchaseOptions";
 import { NotifyMeForm } from "@/components/NotifyMeForm";
 import { YouMightAlsoLike } from "@/components/YouMightAlsoLike";
+import { BlogSection } from "@/components/BlogSection";
 import { detectCountry, getFreeShippingThreshold, isCountrySupported, GeoResult } from "@/lib/shipping";
 import { UnsupportedCountryNotice } from "@/components/UnsupportedCountryNotice";
 import { FirstOrderPopup } from "@/components/FirstOrderPopup";
+import { DEFAULT_LOCALE, formatPrice, type Locale } from "@/lib/i18n/config";
+
+interface BlogPost {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  publishedAt: string;
+  excerpt: string;
+  coverImage: any;
+}
 
 interface ProductPageProps {
   handle?: string;
   initialProducts?: ShopifyProduct[];
   initialSellingPlans?: SellingPlan[];
+  initialBlogPosts?: BlogPost[];
+  locale?: Locale;
 }
 
-const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans }: ProductPageProps = {}) => {
+const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans, initialBlogPosts, locale = DEFAULT_LOCALE }: ProductPageProps = {}) => {
   const params = useParams<{handle: string;}>();
   const handle = handleProp ?? params.handle;
   const [products, setProducts] = useState<ShopifyProduct[]>(initialProducts ?? []);
@@ -46,6 +58,11 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
   );
   const [sellingPlans, setSellingPlans] = useState<SellingPlan[]>(initialSellingPlans ?? []);
   const addItem = useCartStore((state) => state.addItem);
+  const cartItems = useCartStore((state) => state.items);
+  const cartBottleCount = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems]
+  );
   const isMobile = useIsMobile();
   const [countryCode, setCountryCode] = useState<string | null>(null);
   const [countryName, setCountryName] = useState<string | null>(null);
@@ -113,54 +130,6 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
     return () => { document.title = 'ATTIMO Specialty Extra Virgin Olive Oil'; };
   }, [handle, content]);
 
-  useEffect(() => {
-    const jsonLdMap: Record<string, object> = {
-      nocellara: {
-        "@context": "https://schema.org/",
-        "@type": "Product",
-        "name": "Attimo Nocellara Extra Virgin Olive Oil 500ml",
-        "description": "Single-variety Nocellara extra virgin olive oil from Sicily. Early harvest, cold-pressed. 400mg/kg polyphenols — lab tested. 500ml.",
-        "sku": "ATTIMO-NOC-500",
-        "brand": { "@type": "Brand", "name": "Attimo" },
-        "image": "https://cdn.shopify.com/s/files/1/0949/7867/0975/files/NOCELLARA1_1.png?v=1772735243",
-        "offers": { "@type": "Offer", "url": "https://attimo-oil.com/product/nocellara", "price": "24.00", "priceCurrency": "EUR", "availability": "https://schema.org/InStock", "itemCondition": "https://schema.org/NewCondition" },
-        "aggregateRating": aggregateRating,
-        "review": reviews
-      },
-      coratina: {
-        "@context": "https://schema.org/",
-        "@type": "Product",
-        "name": "Attimo Coratina Extra Virgin Olive Oil 500ml",
-        "description": "Single-variety Coratina extra virgin olive oil from Puglia. Early harvest, cold-pressed. 847mg/kg polyphenols — lab tested. Certified organic. 500ml.",
-        "sku": "ATTIMO-COR-500",
-        "brand": { "@type": "Brand", "name": "Attimo" },
-        "image": "https://cdn.shopify.com/s/files/1/0949/7867/0975/files/Coratina-2_1_1.png?v=1773399330",
-        "offers": { "@type": "Offer", "url": "https://attimo-oil.com/product/coratina", "price": "24.00", "priceCurrency": "EUR", "availability": "https://schema.org/InStock", "itemCondition": "https://schema.org/NewCondition" },
-        "aggregateRating": aggregateRating,
-        "review": reviews
-      },
-      picual: {
-        "@context": "https://schema.org/",
-        "@type": "Product",
-        "name": "Attimo Picual Extra Virgin Olive Oil 500ml",
-        "description": "Single-variety Picual extra virgin olive oil from Andalusia. Early harvest, cold-pressed. 675mg/kg polyphenols — lab tested. 500ml.",
-        "sku": "ATTIMO-PIC-500",
-        "brand": { "@type": "Brand", "name": "Attimo" },
-        "image": "https://cdn.shopify.com/s/files/1/0949/7867/0975/files/Picual-v21.png?v=1773401549",
-        "offers": { "@type": "Offer", "url": "https://attimo-oil.com/product/picual", "price": "24.00", "priceCurrency": "EUR", "availability": "https://schema.org/InStock", "itemCondition": "https://schema.org/NewCondition" },
-        "aggregateRating": aggregateRating,
-        "review": reviews
-      }
-    };
-    const data = handle ? jsonLdMap[handle] : undefined;
-    if (!data) return;
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(data);
-    document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
-  }, [handle]);
-
   // Meta Pixel: ViewContent
   useEffect(() => {
     if (!handle) return;
@@ -171,14 +140,15 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
     };
     const productName = nameMap[handle];
     if (!productName) return;
+    const slug = handle as "coratina" | "nocellara" | "picual";
     (window as any).fbq?.('track', 'ViewContent', {
       content_name: productName,
       content_ids: [handle],
       content_type: 'product',
-      value: 24.00,
-      currency: 'EUR',
+      value: locale.prices[slug],
+      currency: locale.currency.code,
     });
-  }, [handle]);
+  }, [handle, locale]);
 
   useEffect(() => {
     const ogMap: Record<string, { title: string; description: string; image: string }> = {
@@ -204,8 +174,10 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
     };
   }, [handle]);
 
-  const ONE_TIME_PRICE = 24;
-  const SUBSCRIPTION_PRICE = 22;
+  const productSlug = (handle ?? "coratina") as "coratina" | "nocellara" | "picual";
+  const ONE_TIME_PRICE = locale.prices[productSlug];
+  // Subscription is a flat ~8% discount applied to the base price.
+  const SUBSCRIPTION_PRICE = Math.round(ONE_TIME_PRICE * (22 / 24) * 100) / 100;
   const activePrice = purchaseType === "subscribe" ? SUBSCRIPTION_PRICE : ONE_TIME_PRICE;
 
   const handleAddToCart = () => {
@@ -225,11 +197,11 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
       content_ids: [handle],
       content_type: 'product',
       value: totalValue,
-      currency: 'EUR',
+      currency: locale.currency.code,
     });
     (window as any).fbq?.('track', 'InitiateCheckout', {
       value: totalValue,
-      currency: 'EUR',
+      currency: locale.currency.code,
       num_items: selectedQuantity,
     });
 
@@ -240,9 +212,10 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
       product,
       variantId: variant.id,
       variantTitle: variant.title,
-      price: { amount: String(activePrice), currencyCode: 'EUR' },
+      price: { amount: String(activePrice), currencyCode: locale.currency.code },
       quantity: selectedQuantity,
       selectedOptions: variant.selectedOptions || [],
+      isSubscription: purchaseType === "subscribe",
       ...(purchaseType === "subscribe" && selectedSellingPlanId ? { sellingPlanId: selectedSellingPlanId } : {})
     });
     toast.success(`Added ${selectedQuantity} bottle${selectedQuantity > 1 ? 's' : ''} to cart`, {
@@ -253,7 +226,7 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
   if (loading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#FFFAEA' }}>
-        <Header onWaitlistClick={() => {}} forceScrolled />
+        <Header onWaitlistClick={() => {}} forceScrolled locale={locale} />
         <div className="flex items-center justify-center min-h-[60vh]">
           <p className="text-olive-medium">Loading product...</p>
         </div>
@@ -264,7 +237,7 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
   if (!product) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: '#FFFAEA' }}>
-        <Header onWaitlistClick={() => {}} forceScrolled />
+        <Header onWaitlistClick={() => {}} forceScrolled locale={locale} />
         <div className="flex items-center justify-center min-h-[60vh]">
           <p className="text-olive-medium">Product not found</p>
         </div>
@@ -305,7 +278,7 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FFFAEA' }}>
-      <Header onWaitlistClick={() => {}} forceTransparent darkNav />
+      <Header onWaitlistClick={() => {}} forceTransparent darkNav locale={locale} />
       
       {/* Product Hero Section */}
       <section className="product-hero lg:pt-0">
@@ -420,7 +393,8 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
                       purchaseType={purchaseType}
                       onPurchaseTypeChange={setPurchaseType}
                       selectedSellingPlanId={selectedSellingPlanId}
-                      onSellingPlanChange={setSelectedSellingPlanId} />
+                      onSellingPlanChange={setSelectedSellingPlanId}
+                      locale={locale} />
 
                     <Button
                       onClick={handleAddToCart}
@@ -432,8 +406,8 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
                         borderRadius: "0.75rem"
                       }}>
                       <span className="flex flex-col items-center gap-0.5">
-                        <span className="text-lg">ADD TO CART {purchaseType === "subscribe" && <span className="line-through opacity-60 font-normal">€{selectedQuantity * ONE_TIME_PRICE}</span>} €{selectedQuantity * activePrice}</span>
-                        <span className="font-normal text-xs">{selectedQuantity < freeShippingThreshold ? <span className="font-normal text-xs">{selectedQuantity < freeShippingThreshold ? `(ADD ${freeShippingThreshold - selectedQuantity} MORE BOTTLE${freeShippingThreshold - selectedQuantity > 1 ? 'S' : ''} FOR FREE SHIPPING)` : "(FREE SHIPPING ✓)"}</span> : "(FREE SHIPPING ✓)"}</span>
+                        <span className="text-lg">ADD TO CART {purchaseType === "subscribe" && <span className="line-through opacity-60 font-normal">{formatPrice(selectedQuantity * ONE_TIME_PRICE, locale)}</span>} {formatPrice(selectedQuantity * activePrice, locale)}</span>
+                        <span className="font-normal text-xs">{cartBottleCount < freeShippingThreshold ? <span className="font-normal text-xs">{cartBottleCount < freeShippingThreshold ? `(ADD ${freeShippingThreshold - cartBottleCount} MORE BOTTLE${freeShippingThreshold - cartBottleCount > 1 ? 'S' : ''} FOR FREE SHIPPING)` : "(FREE SHIPPING ✓)"}</span> : "(FREE SHIPPING ✓)"}</span>
                       </span>
                     </Button>
 
@@ -523,9 +497,11 @@ const ProductPage = ({ handle: handleProp, initialProducts, initialSellingPlans 
       <ProductLabTrust content={content.labTrust} labReportUrl={content.labReportUrl} />
       <OilComparison columnHeading={content.polyphenolLabel} polyphenolDisplay={`${content.polyphenolValue} mg/kg`} />
       <FAQ handle={handle} />
-      <YouMightAlsoLike currentHandle={handle} accentColor={content.buttonColor} />
+      <YouMightAlsoLike currentHandle={handle} accentColor={content.buttonColor} locale={locale} />
 
-      <Footer />
+      <BlogSection initialPosts={initialBlogPosts} />
+
+      <Footer locale={locale} />
       <FirstOrderPopup />
     </div>);
 

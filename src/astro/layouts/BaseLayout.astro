@@ -41,6 +41,23 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, "https://attimo-oi
 const jsonLdArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
 const hreflangs: HreflangEntry[] = hreflangPath ? getHreflangs(hreflangPath) : [];
+
+// Organization schema, emitted on every page so search engines can connect
+// the brand across the site. Page-level `jsonLd` (Product, WebSite, etc.)
+// is rendered alongside this.
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "ATTIMO Specialty Olive Oil",
+  url: "https://attimo-oil.com",
+  logo: "https://attimo-oil.com/logo.png",
+  image: "https://cdn.shopify.com/s/files/1/0949/7867/0975/files/Coratina-2_1_1.png?v=1773399330",
+  description:
+    "Single-variety, high-polyphenol, early-harvest extra virgin olive oil from small family groves.",
+  sameAs: ["https://www.instagram.com/attimo.oil"],
+};
+
+const allJsonLd = [organizationJsonLd, ...jsonLdArray];
 ---
 
 <!doctype html>
@@ -95,7 +112,7 @@ const hreflangs: HreflangEntry[] = hreflangPath ? getHreflangs(hreflangPath) : [
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caladea:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" />
     <link rel="icon" type="image/png" href="/favicon.png?v=3" />
 
-    {jsonLdArray.map((data) => <script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />)}
+    {allJsonLd.map((data) => <script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />)}
 
     <script defer src="/klaro-config.js" is:inline></script>
     <link rel="stylesheet" href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css" />

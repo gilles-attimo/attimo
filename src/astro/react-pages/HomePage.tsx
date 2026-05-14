@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { aggregateRating, reviews } from "@/lib/reviewSchema";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { OilProductWidgets } from "@/components/OilProductWidgets";
@@ -14,6 +13,7 @@ import { FAQ } from "@/components/FAQ";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { Footer } from "@/components/Footer";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 60_000, refetchOnWindowFocus: false } } });
 
@@ -28,36 +28,17 @@ interface InitialPost {
 
 interface InnerProps {
   initialPosts?: InitialPost[];
+  locale?: Locale;
 }
 
-function HomePageInner({ initialPosts }: InnerProps) {
+function HomePageInner({ initialPosts, locale = DEFAULT_LOCALE }: InnerProps) {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
-
-  useEffect(() => {
-    const orgSchema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "Attimo Olive Oil",
-      url: "https://attimo-oil.com",
-      aggregateRating,
-      review: reviews,
-    };
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.text = JSON.stringify(orgSchema);
-    document.head.appendChild(script);
-    return () => {
-      try {
-        document.head.removeChild(script);
-      } catch {}
-    };
-  }, []);
 
   return (
     <div className="min-h-screen overflow-y-scroll h-screen" style={{ backgroundColor: "#FFFAEA" }}>
-      <Header onWaitlistClick={() => setIsWaitlistOpen(true)} />
+      <Header onWaitlistClick={() => setIsWaitlistOpen(true)} locale={locale} />
       <Hero onWaitlistClick={() => setIsWaitlistOpen(true)} />
-      <OilProductWidgets />
+      <OilProductWidgets locale={locale} />
       <IndustryProblem />
       <KleiaWay />
       <OilComparison />
@@ -65,17 +46,17 @@ function HomePageInner({ initialPosts }: InnerProps) {
       <PolyphenolComparison />
       <FAQ />
       <BlogSection initialPosts={initialPosts} />
-      <Footer />
+      <Footer locale={locale} />
       <WaitlistForm isOpen={isWaitlistOpen} onClose={() => setIsWaitlistOpen(false)} />
       <Sonner />
     </div>
   );
 }
 
-export default function HomePage({ initialPosts }: { initialPosts?: InitialPost[] }) {
+export default function HomePage({ initialPosts, locale }: { initialPosts?: InitialPost[]; locale?: Locale }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <HomePageInner initialPosts={initialPosts} />
+      <HomePageInner initialPosts={initialPosts} locale={locale} />
     </QueryClientProvider>
   );
 }

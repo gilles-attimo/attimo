@@ -2,6 +2,18 @@
 import BaseLayout from "@astro/layouts/BaseLayout.astro";
 import HomePage from "@astro/react-pages/HomePage";
 import { sanityClient } from "@/lib/sanity";
+import { LOCALES, type Locale } from "@/lib/i18n/config";
+
+export function getStaticPaths() {
+  return LOCALES
+    .filter((l) => l.slug !== "")
+    .map((locale) => ({
+      params: { locale: locale.slug },
+      props: { locale },
+    }));
+}
+
+const { locale } = Astro.props as { locale: Locale };
 
 const websiteJsonLd = {
   "@context": "https://schema.org",
@@ -17,15 +29,17 @@ const homepagePosts = await sanityClient.fetch(
     _id, title, slug, publishedAt, excerpt, coverImage
   }`
 );
+
+const canonical = `https://attimo-oil.com/${locale.slug}/`;
 ---
 
 <BaseLayout
   title="ATTIMO Single-Variety, High-Polyphenol, Early Harvest Olive Oil"
   description="Single-variety, high-polyphenol olive oil. Early harvest, lab-tested for quality. From small family groves to your table. Shop now."
-  canonical="https://attimo-oil.com/"
+  canonical={canonical}
   bodyStyle="background-color: #FFFAEA;"
   jsonLd={websiteJsonLd}
   hreflangPath="/"
 >
-  <HomePage initialPosts={homepagePosts} client:load />
+  <HomePage initialPosts={homepagePosts} locale={locale} client:load />
 </BaseLayout>
